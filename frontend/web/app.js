@@ -285,7 +285,7 @@ function onMessage(env) {
       setAvatarTheme(profileAvatar, app.userId);
       showScreen(screenLobby);
       if (app.pendingRoomJoin) {
-        send("room_join", { roomId: app.pendingRoomJoin });
+        send("room_join", { roomId: app.pendingRoomJoin }); // @BE
         app.pendingRoomJoin = "";
       }
       break;
@@ -386,7 +386,7 @@ function renderRooms() {
       btn.className = "btn primary";
       btn.textContent = r.started ? "不可加入" : "加入";
       btn.disabled = !!r.started;
-      btn.onclick = () => send("room_join", { roomId: r.id });
+      btn.onclick = () => send("room_join", { roomId: r.id }); // @BE
       item.appendChild(left);
       item.appendChild(btn);
       roomsList.appendChild(item);
@@ -1582,7 +1582,7 @@ function sendChat() {
   if (!chatInput) return;
   const text = (chatInput.value || "").trim();
   if (!text) return;
-  send("chat_send", { text });
+  send("chat_send", { text }); // @BE
   chatInput.value = "";
 }
 

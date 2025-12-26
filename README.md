@@ -9,6 +9,7 @@
 
 - `backend/`：后端服务（Go），提供 WebSocket 实时对战与房间管理
 - `frontend/`：前端服务（Go 静态服务器 + 原生 HTML/JS），提供游戏页面
+- `webapp/`：典型 Gin+GORM 分层 Web 示例（CRUD/中间件/定时任务/异步队列）
 
 ## 运行方式（本地）
 
