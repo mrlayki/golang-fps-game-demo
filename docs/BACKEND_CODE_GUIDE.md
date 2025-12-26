@@ -2,7 +2,7 @@
 
 这份文档面向“学习 Go + 学习网络/同步”的阅读方式：先从入口与协议开始，再看 WebSocket，再看 Hub/Room 的业务循环。
 
-> 说明：`backend/internal/game/hub.go`（~500+ 行）和 `backend/internal/game/room.go`（~300+ 行）非常长，如果完全逐行写注释会变成几千行“注释噪音”。我在它们上采用“逐函数 + 关键行”方式，并配合 `rg -n`/`nl -ba` 给你精确定位。你如果希望我把某一个大文件也做成“逐行释义”，告诉我文件名即可（例如只做 `hub.go`）。
+> 说明：`backend/internal/game/hub.go`（~500+ 行）和 `backend/internal/game/room.go`（~300+ 行）非常长，如果完全逐行写注释会变成几千行“注释噪音”。我在它们上采用“逐函数 + 关键行”方式，并配合 `rg -n`/`nl -ba` 给你精确定位。
 
 ## 推荐阅读顺序
 
