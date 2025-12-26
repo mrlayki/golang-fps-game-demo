@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>FPS Pixel Room</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <div id="app">
+      <header class="topbar">
+        <div class="brand">FPS Pixel Room</div>
+        <div class="topRight">
+          <div id="userPill" class="pill hidden"></div>
+          <div id="netStatus" class="status">未连接</div>
+        </div>
+      </header>
+
+      <main class="main">
+        <section id="screenLogin" class="screen">
+          <div class="hero">
+            <div class="heroLeft">
+              <h1>像素 FPS 房间对战</h1>
+              <p class="sub">
+                纯网页多人联机 Demo：创建房间 → 准备 → 房主开始 → 进入对局。
+              </p>
+              <div class="chips">
+                <span class="chip">像素风渲染</span>
+                <span class="chip">房间匹配</span>
+                <span class="chip">WebSocket 实时同步</span>
+              </div>
+            </div>
+            <div class="heroRight">
+              <div class="card">
+                <label class="label">你的名字（最多 12 字）</label>
+                <input id="nameInput" class="input" maxlength="12" placeholder="例如：小明" />
+                <button id="loginBtn" class="btn primary full">进入大厅</button>
+                <p class="hint">操作：WASD 移动｜鼠标转向（点画面锁定）｜左键射击</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="screenLobby" class="screen hidden">
+          <h1>大厅</h1>
+          <div class="grid">
+            <div class="card">
+              <h2>我的信息</h2>
+              <div class="profile">
+                <div class="pixelAvatar" id="profileAvatar"></div>
+                <div class="profileMeta">
+                  <div class="profileName" id="profileName">-</div>
+                  <div class="profileId muted" id="profileId">-</div>
+                </div>
+              </div>
+              <div class="row">
+                <button id="copyMeBtn" class="btn">复制我的信息</button>
+              </div>
+              <div class="divider"></div>
+
+              <h2>创建房间</h2>
+              <div class="row">
+                <input id="roomNameInput" class="input" maxlength="18" placeholder="房间名（可选）" />
+                <button id="createRoomBtn" class="btn primary">创建</button>
+              </div>
+              <div class="divider"></div>
+
+              <h2>快速加入</h2>
+              <div class="row">
+                <input id="joinRoomIdInput" class="input" placeholder="输入房间ID（例如 r_xxx）" />
+                <button id="joinRoomBtn" class="btn primary">加入</button>
+              </div>
+              <div class="row">
+                <button id="refreshRoomsBtn" class="btn">刷新列表</button>
+              </div>
+            </div>
+
+            <div class="card">
+              <h2>房间列表</h2>
+              <div id="roomsList" class="rooms"></div>
+              <p class="hint">提示：已开始的房间无法加入。</p>
+            </div>
+          </div>
+        </section>
+
+        <section id="screenRoom" class="screen hidden">
+          <h1 id="roomTitle">房间</h1>
+          <div class="card">
+            <div class="row space">
+              <div class="muted" id="roomMeta"></div>
+              <div class="row">
+                <button id="copyRoomIdBtn" class="btn">复制房间ID</button>
+                <button id="copyInviteBtn" class="btn primary">复制邀请链接</button>
+                <button id="leaveRoomBtn" class="btn">离开</button>
+              </div>
+            </div>
+            <div class="players">
+              <div class="row space">
+                <h2>玩家</h2>
+                <div id="readyCount" class="muted"></div>
+              </div>
+              <div id="playersList" class="playerList"></div>
+            </div>
+            <div class="row">
+              <button id="readyBtn" class="btn primary">准备</button>
+              <button id="startBtn" class="btn danger">开始（房主）</button>
+            </div>
+            <div class="divider"></div>
+            <div class="card" style="padding:12px;background:rgba(0,0,0,0.10)">
+              <h2 style="margin:0 0 10px;font-size:14px">对局设置（房主）</h2>
+              <div class="row">
+                <label class="label" style="margin:0;min-width:110px">胜利击杀数</label>
+                <input id="winScoreInput" class="input" type="number" min="1" max="50" value="10" />
+              </div>
+              <div class="row">
+                <label class="label" style="margin:0;min-width:110px">小地图显示敌人</label>
+                <input id="showEnemiesOnMapToggle" type="checkbox" checked />
+              </div>
+              <div class="row">
+                <label class="label" style="margin:0;min-width:110px">墙上标语</label>
+                <input id="wallTextInput" class="input" maxlength="24" placeholder="例如：ACME 友谊赛" />
+              </div>
+              <p class="hint" style="margin-top:10px">提示：设置在开局时生效，范围 1–50。</p>
+            </div>
+            <p class="hint">
+              操作：WASD 移动｜鼠标转向（点画面锁定）｜左键射击｜ESC 退出指针锁定
+            </p>
+          </div>
+        </section>
+
+        <section id="screenGame" class="screen hidden">
+          <div class="gameWrap">
+            <canvas id="gameCanvas" class="game" tabindex="0"></canvas>
+            <div class="hud">
+              <div class="hudLeft">
+                <div id="hudName" class="hudLine"></div>
+                <div id="hudHP" class="hudLine"></div>
+              </div>
+              <div class="hudRight">
+                <div id="hudScore" class="hudLine"></div>
+                <div id="hudPing" class="hudLine"></div>
+              </div>
+              <div class="hudTop">
+                <div id="hudRoom" class="hudTopLine"></div>
+                <div id="hudCompass" class="hudTopLine muted"></div>
+              </div>
+              <div class="hudBottomLeft">
+                <div class="hudMiniTitle">比分</div>
+                <div id="hudBoardMini" class="hudBoardMini"></div>
+              </div>
+              <div id="hudBoard" class="hudBoard hidden"></div>
+              <div id="killFeed" class="killFeed"></div>
+              <div id="toast" class="toast hidden"></div>
+              <div id="damageVignette" class="damageVignette"></div>
+              <div class="chatPanel" id="chatPanel">
+                <div class="chatHeader">
+                  <div class="chatTitle">聊天</div>
+                  <div class="chatHint">Enter 打开输入</div>
+                </div>
+                <div id="chatLog" class="chatLog"></div>
+                <div class="chatInputRow">
+                  <input id="chatInput" class="chatInput" placeholder="输入后回车发送…" maxlength="120" />
+                  <button id="chatSendBtn" class="chatSend">发送</button>
+                </div>
+              </div>
+              <div id="gameMenu" class="gameMenu hidden">
+                <div class="menuCard">
+                  <div class="menuTitle">菜单</div>
+                  <div class="menuSub muted">ESC 打开/关闭</div>
+                  <div class="menuGrid">
+                    <button id="menuResumeBtn" class="btn primary full">继续游戏</button>
+                    <button id="menuLeaveBtn" class="btn danger full">退出到大厅</button>
+                    <button id="menuCopyInviteBtn" class="btn full">复制邀请链接</button>
+                  </div>
+                  <div class="menuOpts">
+                    <label class="optRow">
+                      <span class="muted">音效</span>
+                      <input id="sfxToggle" type="checkbox" />
+                    </label>
+                    <label class="optRow">
+                      <span class="muted">灵敏度</span>
+                      <input id="sensRange" type="range" min="1" max="20" value="10" />
+                    </label>
+                  </div>
+                  <div class="menuHelp muted">
+                    WASD 移动｜鼠标转向｜左键射击｜Tab 计分板｜Enter 聊天
+                  </div>
+                </div>
+              </div>
+              <div id="gameOver" class="gameMenu hidden">
+                <div class="menuCard">
+                  <div class="menuTitle" id="gameOverTitle">对局结束</div>
+                  <div class="menuSub muted" id="gameOverSub"></div>
+                  <div id="gameOverBless" class="gameBless"></div>
+                  <div class="divider"></div>
+                  <div id="gameOverRank" class="rankList"></div>
+                  <div class="menuGrid">
+                    <button id="gameOverLeaveBtn" class="btn danger full">退出到大厅</button>
+                    <!-- <button id="gameOverCloseBtn" class="btn full">关闭</button> -->
+                  </div>
+                </div>
+              </div>
+              <div class="crosshair"></div>
+              <div class="tip">点击画面锁定鼠标｜ESC 菜单｜Tab 计分板｜Enter 聊天</div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script src="./config.js"></script>
+    <script src="./app.js"></script>
+  </body>
+</html>
